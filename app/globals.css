@@ -1,0 +1,244 @@
+@layer theme, base, antd, components, utilities;
+
+@import "tailwindcss";
+
+/* Token màu & font — docs/REQUIREMENTS.md §5. Không dùng mã màu rời rạc trong class. */
+@theme inline {
+  --color-brand: #63381a;
+  --color-brand-soft: #8a5a3b;
+  --color-cream: #faf6ef;
+  --color-sand: #efe8dc;
+  --color-sage: #4f6b3a;
+  --color-ink: #2b2118;
+  --color-ink-soft: #5c4a3c;
+  --color-danger: #9b2c1f;
+  --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* Playfair mặc định dùng số kiểu cũ (lệch dòng) — ép số thẳng hàng cho giá tiền */
+  font-variant-numeric: lining-nums;
+}
+
+/* Không để 1 chữ rớt xuống dòng cuối (kết hợp hàm nw() trong lib/format.ts) */
+p,
+li,
+dd,
+dt,
+label,
+figcaption,
+blockquote {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Chặn tràn ngang (vd. phần tử data-reveal="left/right" đang dịch ra ngoài trước khi hiện)
+   – dùng clip thay vì hidden để không tạo vùng cuộn mới, không làm hỏng position: sticky */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* Màu viền mặc định — đặt trong @layer base để class border-* của Tailwind ghi đè được */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-sand);
+  }
+}
+
+/* Hero: hiện dần khi tải trang (không phụ thuộc JS để không chậm LCP) */
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-in {
+  animation: hero-in 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+/* Đường kẻ nét đứt cho dot-leader bảng giá */
+.dot-leader {
+  background-image: radial-gradient(circle, var(--color-brand-soft) 1px, transparent 1.5px);
+  background-size: 8px 4px;
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  opacity: 0.45;
+}
+
+/* Thanh tab cuộn ngang trên mobile, ẩn scrollbar */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 253, 249, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* animation */
+[data-reveal] {
+  opacity: 0;
+  transition:
+    opacity 1s ease,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Lúc ẩn đi thì chạy nhanh, tránh cảm giác nặng nề khi cuộn ngược */
+[data-reveal]:not(.is-revealed) {
+  transition-duration: 0.35s;
+}
+
+[data-reveal='left'] {
+  transform: translateX(-56px);
+}
+
+[data-reveal='right'] {
+  transform: translateX(56px);
+}
+
+[data-reveal='up'] {
+  transform: translateY(40px);
+}
+
+[data-reveal='flip'] {
+  transform: perspective(900px) rotateX(-32deg) translateY(28px);
+  transform-origin: top center;
+}
+
+[data-reveal='grow-x'] {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+[data-reveal='grow-c'] {
+  transform: scaleX(0);
+  transform-origin: center;
+}
+
+/* Mờ nét + nhích nhẹ lên: dịu hơn blur đứng yên */
+[data-reveal='blur'] {
+  transform: translateY(18px);
+  filter: blur(8px);
+  transition:
+    opacity 1s ease,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1s ease;
+}
+
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Ảnh trong card: phóng to rồi "lắng" về đúng cỡ khi card hiện */
+[data-reveal] .reveal-zoom {
+  transform: scale(1.18);
+  transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-reveal].is-revealed .reveal-zoom {
+  transform: scale(1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Hoạ tiết SVG trang trí nhẹ nhàng bồng bềnh */
+@keyframes deco-float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(1.5deg);
+  }
+}
+
+.deco-float {
+  animation: deco-float 9s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Ảnh lớn trong popup bộ sưu tập hiện dần khi chuyển ảnh */
+@keyframes lightbox-fade {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.lightbox-fade {
+  animation: lightbox-fade 0.3s ease-out;
+}
+
+@media (scripting: none) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  [data-reveal] .reveal-zoom {
+    transform: none;
+    transition: none;
+  }
+
+  .deco-float,
+  .lightbox-fade,
+  .hero-in {
+    animation: none;
+  }
+}
