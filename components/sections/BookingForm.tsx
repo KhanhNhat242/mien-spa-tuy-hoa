@@ -60,6 +60,8 @@ export function BookingForm() {
   const [f, setF] = useState<Fields>(EMPTY)
   const [errors, setErrors] = useState<Errors>({})
   const [status, setStatus] = useState<'idle' | 'sending' | 'done'>('idle')
+  // Micro-interaction: đếm số lần được điền sẵn → đổi key để chạy lại hiệu ứng viền nháy
+  const [prefill, setPrefill] = useState<{ n: number; name: string } | null>(null)
   const today = useToday()
 
   const service = f.serviceId ? getService(f.serviceId) : undefined
@@ -78,6 +80,7 @@ export function BookingForm() {
       setStatus('idle')
       setF((prev) => ({ ...prev, serviceId, variantId: variantId ?? (s.variants.length === 1 ? s.variants[0].id : '') }))
       setErrors((prev) => ({ ...prev, serviceId: undefined, variantId: undefined }))
+      setPrefill((p) => ({ n: (p?.n ?? 0) + 1, name: s.name }))
     }
     window.addEventListener(BOOK_EVENT, onBook)
     return () => window.removeEventListener(BOOK_EVENT, onBook)
@@ -118,7 +121,7 @@ export function BookingForm() {
   if (status === 'done') {
     return (
       <div className="lightbox-fade flex flex-col items-center py-10 text-center" role="status">
-        <span className="flex size-16 items-center justify-center rounded-full bg-sage text-cream">
+        <span className="pop-in flex size-16 items-center justify-center rounded-full bg-sage text-cream">
           <CheckIcon width={30} height={30} strokeWidth={2.2} />
         </span>
         <p className="mt-6 font-serif text-2xl text-brand">{nw('Đã gửi yêu cầu đặt lịch', 1)}</p>
@@ -147,6 +150,7 @@ export function BookingForm() {
           className={`${btn.ghost} mt-6`}
           onClick={() => {
             setF(EMPTY)
+            setPrefill(null)
             setStatus('idle')
           }}
         >
@@ -158,6 +162,16 @@ export function BookingForm() {
 
   return (
     <form noValidate onSubmit={onSubmit} aria-describedby="bk-intro" className="grid gap-5 sm:grid-cols-2">
+      <p aria-live="polite" className="sm:col-span-2 empty:hidden">
+        {prefill && (
+          <span key={prefill.n} className="msg-in flex items-center gap-2 rounded-2xl bg-sage/10 px-4 py-3 text-sm text-sage">
+            <CheckIcon width={18} height={18} strokeWidth={2.2} className="shrink-0" />
+            <span>
+              Đã chọn <strong className="font-semibold">{prefill.name}</strong>. {nw('Hãy chọn phiên bản, ngày và giờ phù hợp.')}
+            </span>
+          </span>
+        )}
+      </p>
       <Field id="name" label="Họ và tên" error={errors.name}>
         <input
           id="bk-name"
@@ -191,7 +205,8 @@ export function BookingForm() {
       <Field id="serviceId" label="Dịch vụ / Combo" error={errors.serviceId}>
         <select
           id="bk-serviceId"
-          className={inputCls(errors.serviceId)}
+          key={`svc-${prefill?.n ?? 0}`}
+          className={`${inputCls(errors.serviceId)} ${prefill ? 'field-flash' : ''}`}
           value={f.serviceId}
           onChange={(e) => set('serviceId', e.target.value)}
           aria-invalid={!!errors.serviceId}
@@ -212,7 +227,8 @@ export function BookingForm() {
       <Field id="variantId" label="Phiên bản" error={errors.variantId}>
         <select
           id="bk-variantId"
-          className={inputCls(errors.variantId)}
+          key={`var-${prefill?.n ?? 0}`}
+          className={`${inputCls(errors.variantId)} ${prefill ? 'field-flash' : ''}`}
           value={f.variantId}
           onChange={(e) => set('variantId', e.target.value)}
           disabled={!service}
@@ -298,7 +314,7 @@ export function BookingForm() {
             </span>
             <span className="text-sm text-ink-soft">
               Tạm tính:{' '}
-              <span className="font-serif text-xl text-brand">
+              <span key={`${variant.id}-${f.people}`} className="msg-in inline-block font-serif text-xl text-brand">
                 {formatPrice(variant.price * Math.max(1, Number(f.people) || 1))}
               </span>
             </span>
@@ -309,11 +325,18 @@ export function BookingForm() {
       </div>
 
       <div className="sm:col-span-2">
-        <button type="submit" disabled={status === 'sending'} className={`${btn.primary} w-full disabled:cursor-wait disabled:opacity-70`}>
-          {status === 'sending' ? 'Đang gửi…' : 'Gửi yêu cầu đặt lịch'}
+        <button type="submit" aria-busy={status === 'sending'} disabled={status === 'sending'} className={`${btn.primary} w-full disabled:cursor-wait disabled:opacity-70`}>
+          {status === 'sending' ? (
+            <>
+              <span aria-hidden className="spinner size-4 rounded-full border-2 border-cream/40 border-t-cream" />
+              Đang gửi…
+            </>
+          ) : (
+            'Gửi yêu cầu đặt lịch'
+          )}
         </button>
         <p className="mt-3 text-center text-xs text-ink-soft">
-          {nw('Miên Spa sẽ gọi lại xác nhận trước khi bạn đến. Lịch chỉ được giữ sau khi xác nhận.')}
+          {nw('Lịch chỉ được giữ sau khi Miên Spa gọi xác nhận.')}
         </p>
       </div>
     </form>
@@ -321,7 +344,7 @@ export function BookingForm() {
 }
 
 const inputCls = (err?: string) =>
-  `h-12 w-full rounded-xl border bg-cream px-4 text-[0.95rem] text-ink placeholder:text-ink-soft/50 transition focus:outline-none focus:ring-2 disabled:opacity-60 ${err ? 'border-danger/60 focus:ring-danger/20' : 'border-brand/15 focus:border-brand/50 focus:ring-brand/15'}`
+  `h-12 w-full rounded-xl border bg-cream px-4 text-base text-ink placeholder:text-ink-soft/50 transition focus:outline-none focus:ring-[3px] disabled:opacity-60 ${err ? 'border-danger/60 focus:ring-danger/20' : 'border-brand/15 focus:border-brand/50 focus:ring-brand/20'}`
 
 function Field({ id, label, error, children }: { id: string; label: string; error?: string; children: ReactNode }) {
   return (
@@ -331,7 +354,7 @@ function Field({ id, label, error, children }: { id: string; label: string; erro
       </label>
       {children}
       {error && (
-        <p id={`bk-${id}-err`} className="mt-1.5 text-xs text-danger">
+        <p id={`bk-${id}-err`} className="msg-in mt-1.5 text-sm text-danger">
           {nw(error)}
         </p>
       )}

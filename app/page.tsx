@@ -6,6 +6,7 @@ import { Services } from '@/components/sections/Services'
 import { Combos } from '@/components/sections/Combos'
 import { Pricing } from '@/components/sections/Pricing'
 import { Process } from '@/components/sections/Process'
+import { Videos } from '@/components/sections/Videos'
 import { Gallery } from '@/components/sections/Gallery'
 import { BookingContact } from '@/components/sections/BookingContact'
 import { Footer } from '@/components/sections/Footer'
@@ -47,15 +48,23 @@ export default function Home() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      {/* Accessible & Ethical: bỏ qua menu, nhảy thẳng tới nội dung */}
+      <a
+        href="#noi-dung"
+        className="sr-only rounded-full bg-brand px-5 py-3 text-sm font-semibold text-cream focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100]"
+      >
+        Bỏ qua đến nội dung chính
+      </a>
       <Header />
-      <main className="flex-1">
+      <main id="noi-dung" tabIndex={-1} className="flex-1 focus:outline-none">
         <Hero />
         <About />
         <Services />
         <Combos />
         <Pricing />
         <Process />
-        <Gallery />
+        <Videos />
+        {/* <Gallery /> */}
         <BookingContact />
       </main>
       <Footer />

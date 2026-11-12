@@ -48,7 +48,7 @@ export function GalleryTabs({ space, guests, video }: { space: Item[]; guests: I
             aria-selected={tab === i}
             aria-controls={`${base}-p${i}`}
             onClick={() => setTab(i as 0 | 1)}
-            className={`min-h-11 rounded-full px-5 text-sm font-semibold whitespace-nowrap transition sm:px-6 ${tab === i ? 'bg-brand text-cream shadow-[0_10px_24px_-12px_rgba(99,56,26,0.7)]' : 'text-ink-soft hover:text-brand'}`}
+            className={`press min-h-11 rounded-full px-5 text-sm font-semibold whitespace-nowrap transition sm:px-6 ${tab === i ? 'bg-brand text-cream shadow-soft' : 'text-ink-soft hover:text-brand'}`}
           >
             <span className="sm:hidden">{short}</span>
             <span className="hidden sm:inline">{label}</span>
@@ -67,7 +67,7 @@ export function GalleryTabs({ space, guests, video }: { space: Item[]; guests: I
             const span = SPACE_SPANS[idx]
             if (it === null) {
               return (
-                <div key="video" className={`relative overflow-hidden rounded-[1.5rem] bg-ink ${span}`}>
+                <div key="video" className={`relative overflow-hidden rounded-3xl bg-ink ${span}`}>
                   <video
                     className="absolute inset-0 size-full object-cover"
                     controls
@@ -104,7 +104,7 @@ function Tile({ item, className = '', natural, onOpen }: { item: Item; className
       type="button"
       onClick={onOpen}
       aria-label={`Phóng to ảnh: ${item.alt}`}
-      className={`group relative block w-full overflow-hidden rounded-[1.5rem] bg-sand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${className}`}
+      className={`group relative block w-full overflow-hidden rounded-3xl bg-sand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${className}`}
     >
       {natural ? (
         <Image src={item.src} alt={item.alt} sizes="(min-width: 768px) 25vw, 50vw" placeholder="blur" className="h-auto w-full transition duration-700 group-hover:scale-105" />
@@ -139,7 +139,7 @@ function Lightbox({ items, index, onClose, onStep }: { items: Item[]; index: num
   const nav = 'absolute top-1/2 z-10 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-cream/15 text-cream backdrop-blur transition hover:bg-cream/30'
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Xem ảnh" className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/90 p-4 sm:p-10" onClick={onClose}>
+    <div role="dialog" aria-modal="true" aria-label="Xem ảnh" className="on-dark fixed inset-0 z-[70] flex items-center justify-center bg-ink/90 p-4 sm:p-10" onClick={onClose}>
       <button ref={closeRef} type="button" aria-label="Đóng" onClick={onClose} className="absolute top-4 right-4 z-10 flex size-12 items-center justify-center rounded-full bg-cream/15 text-cream transition hover:bg-cream/30">
         <CloseIcon width={24} height={24} />
       </button>

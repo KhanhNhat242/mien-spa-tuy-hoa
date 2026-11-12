@@ -33,8 +33,9 @@ export const SITE = {
 export const NAV = [
   { href: '#gioi-thieu', label: 'Giới thiệu' },
   { href: '#dich-vu', label: 'Dịch vụ' },
+  { href: '#combo', label: 'Combo' },
   { href: '#bang-gia', label: 'Bảng giá' },
-  { href: '#khong-gian', label: 'Không gian' },
+  { href: '#video', label: 'Video' },
   { href: '#lien-he', label: 'Liên hệ' },
 ] as const
 

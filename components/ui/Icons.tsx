@@ -41,9 +41,16 @@ export const PinIcon = (p: P) => (
   </svg>
 )
 
+export const CheckIcon = (p: P) => (
+  <svg {...base(p)}>
+    <path d="m5 12.5 4.5 4.5L19 7.5" />
+  </svg>
+)
+
+/* Icon cho 5 bước Quy trình (PROCESS_STEPS.icon) */
 export const ChatIcon = (p: P) => (
   <svg {...base(p)}>
-    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5Z" />
+    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4A1.5 1.5 0 0 1 4 14.5Z" />
     <path d="M8.5 8.5h7M8.5 11.5h4.5" />
   </svg>
 )
@@ -63,32 +70,6 @@ export const TeaIcon = (p: P) => (
   </svg>
 )
 
-export const LeafIcon = (p: P) => (
-  <svg {...base(p)}>
-    <path d="M5 19C5 10 10 5 20 4c0 9-5 15-13 15Z" />
-    <path d="M5 19c3-4 6-7 10-9" />
-  </svg>
-)
-
-export const SparkIcon = (p: P) => (
-  <svg {...base(p)}>
-    <path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7Z" />
-  </svg>
-)
-
-export const HeartHandIcon = (p: P) => (
-  <svg {...base(p)}>
-    <path d="M12 11.5 9 8.6a2 2 0 0 1 3-2.6 2 2 0 0 1 3 2.6Z" />
-    <path d="M3 16h3l4 2.5h5.5a1.5 1.5 0 0 0 0-3H12m-6 .5 5.5-3.5h3M17 15.5l3-2a1.4 1.4 0 0 1 1.8 2.1L17.5 20" />
-  </svg>
-)
-
-export const CheckIcon = (p: P) => (
-  <svg {...base(p)}>
-    <path d="m5 12.5 4.5 4.5L19 7.5" />
-  </svg>
-)
-
 export const ArrowRightIcon = (p: P) => (
   <svg {...base(p)}>
     <path d="M5 12h14M13 6l6 6-6 6" />
@@ -104,6 +85,12 @@ export const MenuIcon = (p: P) => (
 export const CloseIcon = (p: P) => (
   <svg {...base(p)}>
     <path d="M6 6l12 12M18 6 6 18" />
+  </svg>
+)
+
+export const PlayIcon = (p: P) => (
+  <svg {...base(p)} fill="currentColor" stroke="none">
+    <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" />
   </svg>
 )
 
@@ -130,40 +117,4 @@ export const ZaloIcon = ({ className }: { className?: string }) => (
   <span aria-hidden className={`inline-flex items-center justify-center font-sans text-[10px] font-bold tracking-tight ${className ?? ''}`}>
     Zalo
   </span>
-)
-
-/** Hoạ tiết bông lúa (lấy cảm hứng từ logo) để trang trí nền */
-export const RiceStalk = (p: P) => (
-  <svg viewBox="0 0 120 220" fill="none" aria-hidden {...p}>
-    <path d="M60 218C58 160 50 110 78 30" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    {[
-      [74, 44, -35],
-      [70, 64, -30],
-      [66, 86, -25],
-      [62, 110, -20],
-      [86, 52, 40],
-      [82, 74, 35],
-      [76, 98, 30],
-      [70, 124, 25],
-    ].map(([x, y, r], i) => (
-      <ellipse
-        key={i}
-        cx={x}
-        cy={y}
-        rx="5"
-        ry="13"
-        transform={`rotate(${r} ${x} ${y})`}
-        fill="currentColor"
-      />
-    ))}
-    <ellipse cx="80" cy="26" rx="4.5" ry="11" transform="rotate(20 80 26)" fill="currentColor" />
-  </svg>
-)
-
-/** Chiếc lá mềm — trang trí góc section */
-export const SoftLeaf = (p: P) => (
-  <svg viewBox="0 0 200 200" fill="none" aria-hidden {...p}>
-    <path d="M20 180C30 90 90 30 185 20c-5 95-70 160-165 160Z" fill="currentColor" />
-    <path d="M20 180C70 120 110 80 160 45" stroke="var(--color-cream)" strokeWidth="2" opacity=".6" />
-  </svg>
 )

@@ -1,114 +1,135 @@
 import Image from 'next/image'
-import { COMBO_STEPS, servicesIn } from '@/lib/site-data'
-import { COMBO_STEP_IMAGES } from '@/lib/images'
+import { COMBO_STEPS, servicesIn, type Service } from '@/lib/site-data'
+import { COMBO_IMAGES } from '@/lib/images'
 import { nw, summarize } from '@/lib/format'
-import { Container, Section, SectionHeading, revealDelay } from '@/components/ui/Section'
+import { Container, Section, revealDelay } from '@/components/ui/Section'
 import { BookButton } from '@/components/ui/BookButton'
-import { ArrowRightIcon, ClockIcon, RiceStalk, SparkIcon } from '@/components/ui/Icons'
-import { btn } from '@/components/ui/styles'
+import { ArrowRightIcon } from '@/components/ui/Icons'
+
+/**
+ * Combo theo bố cục mẫu: tiêu đề 1 dòng "Combo" (mảnh) + "trọn gói" (đậm), rồi các hàng so le zig-zag:
+ * thẻ màu đậm (tên lớn bên trái, thành phần + giá căn phải) và ảnh lớn đổi bên, chồng nhẹ lên thẻ.
+ * Combo Chuyên Sâu là hàng đầu, thẻ nâu `brand` (nổi bật); các combo khác thẻ `sage`.
+ */
+/**
+ * Hiệu ứng hover — chỉ trên thiết bị có chuột (`@media (hover:hover)`); màn cảm ứng luôn hiện đủ màu + chi tiết:
+ * - Ảnh minh hoạ ẩn mặc định (desktop lg+), trượt vào từ phía của nó khi hover/focus vào hàng; thẻ luôn giữ màu gốc
+ * - REVEAL: chi tiết combo ẩn mặc định, trượt vào lần lượt (stagger) khi hover/focus
+ */
+const SLIDE_BASE =
+  'transition-[opacity,translate] duration-700 ease-out motion-reduce:transition-none lg:[@media(hover:hover)]:opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:translate-x-0 group-focus-within:opacity-100'
+/** Ảnh bên phải trượt vào từ phải, ảnh bên trái trượt vào từ trái */
+const slideFrom = (flip: boolean) =>
+  `${SLIDE_BASE} ${flip ? 'lg:[@media(hover:hover)]:-translate-x-[40%]' : 'lg:[@media(hover:hover)]:translate-x-[40%]'}`
+const REVEAL =
+  'transition-[opacity,translate] duration-500 ease-out motion-reduce:transition-none [@media(hover:hover)]:translate-x-3 [@media(hover:hover)]:opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:translate-x-0 group-focus-within:opacity-100'
+const stagger = (i: number) => ({ transitionDelay: `${i * 60}ms` })
+/**
+ * Độ rộng thẻ (desktop): mặc định full chiều ngang khung nội dung; hover/focus → thu về 3/4 để nhường chỗ
+ * cho ảnh trượt vào (ảnh rộng 1/3, chồng lên thẻ 1/12). Màn cảm ứng: luôn 3/4 + ảnh.
+ * Lưu ý: group-hover có độ ưu tiên CSS cao hơn biến thể @media nên luôn thắng khi hover.
+ */
+const CARD_WIDTH =
+  'lg:w-3/4 lg:[@media(hover:hover)]:w-full lg:group-hover:w-3/4 lg:group-focus-within:w-3/4 transition-[width,padding] duration-700 ease-out motion-reduce:transition-none'
+/**
+ * Đệm phía ảnh (ảnh chồng lên thẻ 1/12 khung): chỉ cần khi ảnh hiện. Mặc định (có chuột) hai bên bằng nhau
+ * → chữ các hàng thẳng hàng; hover/focus → nới đệm phía ảnh. Màn cảm ứng: luôn nới (ảnh luôn hiện).
+ */
+const imageSidePad = (flip: boolean) =>
+  flip
+    ? 'lg:pr-12 lg:pl-[calc(100%/12+2.5rem)] lg:[@media(hover:hover)]:pl-12 lg:group-hover:pl-[calc(100%/12+2.5rem)] lg:group-focus-within:pl-[calc(100%/12+2.5rem)]'
+    : 'lg:pl-12 lg:pr-[calc(100%/12+2.5rem)] lg:[@media(hover:hover)]:pr-12 lg:group-hover:pr-[calc(100%/12+2.5rem)] lg:group-focus-within:pr-[calc(100%/12+2.5rem)]'
+
+function ComboRow({ combo, index }: { combo: Service; index: number }) {
+  const sum = summarize([combo.id])
+  const img = COMBO_IMAGES[combo.id]
+  const flip = index % 2 === 1 // hàng lẻ: ảnh bên trái, thẻ bên phải
+  const vip = !!combo.highlight
+  const [first, ...rest] = combo.name.split(' ') // "Combo" / "Chuyên Sâu"
+  const items = vip ? COMBO_STEPS.map((s) => s.title) : (combo.includes ?? [])
+
+  return (
+    <li data-reveal="up" style={revealDelay(index * 120)} className="group relative">
+      {/*
+        Ảnh — desktop: định vị tuyệt đối (rộng 4/12 cột, trùm lên mép trên/dưới thẻ 12%) để chiều cao hàng
+        chỉ phụ thuộc vào thẻ → không còn khoảng trống thừa khi ảnh đang ẩn.
+      */}
+      <div
+        className={`relative z-10 aspect-[16/10] overflow-hidden rounded-3xl shadow-lift lg:absolute lg:inset-y-[-12%] lg:aspect-auto lg:w-1/3 ${slideFrom(flip)} ${flip ? 'lg:left-0' : 'lg:right-0'
+          }`}
+      >
+        <Image src={img.src} alt={img.alt} fill sizes="(min-width: 1024px) 400px, 100vw" placeholder="blur" className="reveal-zoom object-cover" />
+      </div>
+
+      {/* Thẻ */}
+      <article
+        className={`on-dark relative z-20 mx-3 -mt-14 rounded-3xl p-6 text-cream shadow-card sm:mx-6 sm:p-8 lg:mx-0 lg:mt-0 lg:py-10 ${CARD_WIDTH} ${vip ? 'bg-brand' : 'bg-sage'
+          } lg:z-0 ${flip ? 'lg:ml-auto' : ''} ${imageSidePad(flip)}`}
+      >
+        {/* mobile: tên → thành phần & giá → nút; sm+: tên + nút bên trái, thành phần & giá bên phải */}
+        <div className="grid gap-6 sm:grid-cols-[1fr_auto] sm:grid-rows-[1fr_auto] sm:gap-x-10 sm:gap-y-4">
+          <div className="sm:col-start-1 sm:row-start-1">
+            {vip && <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-sand/85">Trải nghiệm VVIP cuối tuần</p>}
+            <h3 className="font-serif text-[2.5rem] leading-[0.95] tracking-[-0.01em] sm:text-5xl">
+              <span className="block">{first}</span>
+              <span className="block">{nw(rest.join(' '), 1)}</span>
+            </h3>
+          </div>
+          <BookButton
+            serviceId={combo.id}
+            ariaLabel={`Đặt ${combo.name}`}
+            className="press order-last inline-flex min-h-11 w-fit items-center gap-2 text-sm font-semibold text-cream underline-offset-4 hover:underline sm:order-none sm:col-start-1 sm:row-start-2 sm:self-end"
+          >
+            Đặt combo này
+            <ArrowRightIcon width={16} height={16} />
+          </BookButton>
+
+          <div className="relative sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:text-right">
+            {/* Gợi ý khi chi tiết đang ẩn (chỉ thiết bị có chuột) */}
+            <p
+              aria-hidden
+              className="pointer-events-none absolute inset-0 hidden items-center justify-end text-sm text-cream/75 transition-opacity duration-300 group-focus-within:opacity-0 group-hover:opacity-0 [@media(hover:hover)]:sm:flex"
+            >
+              Di chuột để xem chi tiết
+            </p>
+            <p className={`text-xs font-semibold uppercase tracking-[0.2em] text-cream/75 ${REVEAL}`} style={stagger(0)}>
+              {sum.duration}
+            </p>
+            <ul className="mt-2 space-y-1 text-[0.95rem] leading-snug text-cream/90">
+              {items.map((x, i) => (
+                <li key={x} className={REVEAL} style={stagger(i + 1)}>
+                  {vip && <span className="text-cream/60">{i + 1}. </span>}
+                  {nw(x)}
+                </li>
+              ))}
+            </ul>
+            <p className={`mt-5 font-serif text-3xl text-cream sm:text-4xl ${REVEAL}`} style={stagger(items.length + 1)}>
+              {sum.price}
+            </p>
+          </div>
+        </div>
+      </article>
+    </li>
+  )
+}
 
 export function Combos() {
-  const combos = servicesIn('combo')
-  const vip = combos.find((c) => c.highlight)!
-  const others = combos.filter((c) => !c.highlight)
-  const vipSum = summarize([vip.id])
+  const combos = servicesIn('combo') // Chuyên Sâu đứng đầu theo dữ liệu
 
   return (
     <Section id="combo" tone="sand" labelledBy="combo-title">
       <Container>
-        <SectionHeading
-          id="combo-title"
-          eyebrow="Gói combo"
-          title="Combo trọn gói cho một ngày thật chậm"
-          desc="Kết hợp nhiều liệu pháp trong một lần ghé, để cơ thể và tinh thần được thả lỏng trọn vẹn từ đầu đến chân."
-        />
+        <header className="mb-10 text-center lg:mb-14">
+          <h2 id="combo-title" className="font-serif text-[2.6rem] leading-[1.1] tracking-[-0.01em] whitespace-nowrap text-brand sm:text-6xl lg:text-[4.5rem]">
+            <span className="font-normal">Combo</span> <span className="font-semibold">trọn gói</span>
+          </h2>
+        </header>
 
-        <div className="grid gap-6 lg:grid-cols-12 lg:gap-8">
-          {/* Spotlight: Combo Chuyên Sâu */}
-          <article
-            data-reveal="left"
-            className="relative flex flex-col overflow-hidden rounded-[2rem] bg-brand p-7 text-cream shadow-[0_40px_80px_-40px_rgba(99,56,26,0.8)] sm:p-10 lg:col-span-7"
-          >
-            <RiceStalk aria-hidden className="deco-float pointer-events-none absolute -top-4 right-4 h-48 text-cream/10" />
-            <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-24 size-72 rounded-full bg-sage/30 blur-3xl" />
-
-            <div className="relative flex flex-1 flex-col">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-cream/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-sand ring-1 ring-cream/20">
-                <SparkIcon width={14} height={14} />
-                {nw('Trải nghiệm VVIP cuối tuần', 1)}
-              </span>
-              <div className="mt-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-                <h3 className="font-serif text-3xl leading-tight sm:text-4xl">{nw(vip.name, 1)}</h3>
-                <p className="flex items-baseline gap-3">
-                  <span className="inline-flex items-center gap-1.5 text-sm text-sand/80">
-                    <ClockIcon width={16} height={16} />
-                    {vipSum.duration}
-                  </span>
-                  <span className="font-serif text-3xl text-cream sm:text-4xl">{vipSum.price}</span>
-                </p>
-              </div>
-
-              {/* Timeline 4 bước */}
-              <ol className="relative mt-8 mb-9 space-y-5 before:absolute before:top-4 before:bottom-4 before:left-8 before:w-px before:border-l before:border-dashed before:border-cream/30 sm:before:left-10">
-                {COMBO_STEPS.map((s, i) => (
-                  <li key={s.title} className="relative flex items-center gap-4 sm:gap-5">
-                    <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl ring-2 ring-cream/25 sm:size-20">
-                      <Image src={COMBO_STEP_IMAGES[i]} alt={s.title} fill sizes="80px" className="object-cover" />
-                      <span className="absolute bottom-1 left-1 flex size-6 items-center justify-center rounded-full bg-sage text-[11px] font-bold text-cream">
-                        {i + 1}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-serif text-lg leading-snug text-cream">{nw(s.title, 1)}</p>
-                      <p className="mt-1 text-sm leading-relaxed text-sand/80">{nw(s.desc)}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-
-              <BookButton serviceId={vip.id} className={`${btn.light} w-fit lg:mt-auto`}>
-                Đặt Combo Chuyên Sâu
-                <ArrowRightIcon width={18} height={18} />
-              </BookButton>
-            </div>
-          </article>
-
-          {/* 3 combo còn lại */}
-          <div className="grid gap-6 lg:col-span-5 lg:grid-rows-3">
-            {others.map((c, i) => {
-              const sum = summarize([c.id])
-              return (
-                <article
-                  key={c.id}
-                  data-reveal="right"
-                  style={revealDelay(i * 120)}
-                  className="flex flex-col justify-between gap-4 rounded-[1.75rem] bg-cream p-6 shadow-[0_20px_50px_-35px_rgba(43,33,24,0.45)] ring-1 ring-brand/5 sm:p-7"
-                >
-                  <div>
-                    <div className="flex items-start justify-between gap-4">
-                      <h3 className="font-serif text-xl leading-snug text-brand sm:text-2xl">{nw(c.name, 1)}</h3>
-                      <p className="shrink-0 text-right">
-                        <span className="block font-semibold text-sage">{sum.price}</span>
-                        <span className="block text-xs text-ink-soft">{sum.duration}</span>
-                      </p>
-                    </div>
-                    <ul className="mt-3 flex flex-wrap gap-2">
-                      {c.includes!.map((x) => (
-                        <li key={x} className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-ink-soft">
-                          {x}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <BookButton serviceId={c.id} ariaLabel={`Chọn ${c.name}`} className={`${btn.ghost} w-fit`}>
-                    Chọn combo này
-                    <ArrowRightIcon width={16} height={16} />
-                  </BookButton>
-                </article>
-              )
-            })}
-          </div>
-        </div>
+        <ol className="space-y-8 lg:space-y-16">
+          {combos.map((c, i) => (
+            <ComboRow key={c.id} combo={c} index={i} />
+          ))}
+        </ol>
       </Container>
     </Section>
   )

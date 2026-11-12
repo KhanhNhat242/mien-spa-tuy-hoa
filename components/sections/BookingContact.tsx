@@ -13,13 +13,12 @@ export function BookingContact() {
   ]
 
   return (
-    <Section id="lien-he" tone="sand" size="lg" labelledBy="booking-title">
+    <Section id="lien-he" tone="cream" size="lg" labelledBy="booking-title">
       <Container>
         <SectionHeading
           id="booking-title"
-          eyebrow="Đặt lịch & Liên hệ"
-          title="Hẹn một buổi thư giãn tại Miên"
-          desc="Để lại thông tin hoặc gọi trực tiếp, Miên Spa luôn sẵn sàng tư vấn liệu trình phù hợp với bạn."
+          title="Đặt lịch & liên hệ"
+          desc="Gọi, nhắn Zalo hoặc để lại thông tin trong form – chọn cách nào tiện cho bạn."
         />
 
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
@@ -27,12 +26,12 @@ export function BookingContact() {
           <div
             id="dat-lich"
             data-reveal="up"
-            className="scroll-mt-24 rounded-[1.5rem] bg-cream p-6 shadow-[0_30px_80px_-45px_rgba(43,33,24,0.55)] sm:p-8 lg:col-span-7 lg:p-10"
+            className="scroll-mt-24 rounded-3xl bg-cream p-6 shadow-lift sm:p-8 lg:col-span-7 lg:p-10"
           >
-            <h3 className="font-serif text-2xl text-brand sm:text-[1.75rem]">Đặt lịch hẹn</h3>
-            <p id="bk-intro" className="mt-2 mb-7 text-[0.95rem] leading-relaxed text-ink-soft">
+            <h3 className="sr-only">Form đặt lịch</h3>
+            <p id="bk-intro" className="mb-7 font-serif text-xl leading-snug text-brand sm:text-2xl">
               {nw(
-                `Vui lòng để lại thông tin, ${SITE.name} sẽ liên hệ xác nhận lại thời gian và dịch vụ trước khi bạn đến.`,
+                `Để lại thông tin, ${SITE.name} sẽ gọi lại xác nhận giờ và dịch vụ trước khi bạn đến.`,
               )}
             </p>
             <BookingForm />
@@ -44,7 +43,7 @@ export function BookingContact() {
               {info.map(({ icon: Icon, label, value, href }) => {
                 const content = (
                   <>
-                    <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-cream text-brand shadow-[0_10px_24px_-16px_rgba(99,56,26,0.5)]">
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-brand/15 text-brand">
                       <Icon width={22} height={22} />
                     </span>
                     <span>
@@ -83,7 +82,7 @@ export function BookingContact() {
               </a>
             </div>
 
-            <div className="relative min-h-64 flex-1 overflow-hidden rounded-[1.5rem] bg-cream ring-1 ring-brand/10">
+            <div className="relative min-h-64 flex-1 overflow-hidden rounded-3xl bg-cream ring-1 ring-brand/10">
               {/* Nền chờ khi bản đồ chưa tải */}
               <div aria-hidden className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center text-ink-soft">
                 <PinIcon width={28} height={28} className="text-brand" />

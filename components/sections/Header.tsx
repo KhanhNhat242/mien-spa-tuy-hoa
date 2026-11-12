@@ -11,6 +11,8 @@ export function Header() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string>('')
   const [scrolled, setScrolled] = useState(false)
+  // Đang trong phạm vi Hero → ẩn nút gọi/đặt lịch, menu dồn sang phải
+  const [inHero, setInHero] = useState(true)
 
   // Scroll-spy: tô đậm mục menu của section đang xem
   useEffect(() => {
@@ -26,9 +28,14 @@ export function Header() {
       if (el) io.observe(el)
     })
     const onScroll = () => setScrolled(window.scrollY > 8)
+    const hero = document.getElementById('top')
+    // rootMargin trừ chiều cao header: Hero coi như đã qua khi mép dưới chạm đáy header
+    const heroIo = new IntersectionObserver(([e]) => setInHero(e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' })
+    if (hero) heroIo.observe(hero)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
       io.disconnect()
+      heroIo.disconnect()
       window.removeEventListener('scroll', onScroll)
     }
   }, [])
@@ -36,15 +43,30 @@ export function Header() {
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    // Menu mobile đang mở → khoá cuộn trang (chừa bề rộng thanh cuộn để trang không bị giật ngang)
+    const html = document.documentElement
+    const gap = window.innerWidth - html.clientWidth
+    const prev = { overflow: html.style.overflow, paddingRight: html.style.paddingRight }
+    html.style.overflow = 'hidden'
+    if (gap > 0) html.style.paddingRight = `${gap}px`
+    // Lên desktop (menu mobile ẩn) thì tự đóng để không giữ khoá cuộn
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const onMq = () => mq.matches && setOpen(false)
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    mq.addEventListener('change', onMq)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      mq.removeEventListener('change', onMq)
+      html.style.overflow = prev.overflow
+      html.style.paddingRight = prev.paddingRight
+    }
   }, [open])
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b border-sand bg-cream/90 backdrop-blur-md transition-shadow ${scrolled ? 'shadow-[0_8px_30px_-18px_rgba(43,33,24,0.35)]' : ''}`}
+      className={`sticky top-0 z-50 border-b border-sand bg-cream/90 backdrop-blur-md transition-shadow ${scrolled ? 'shadow-soft' : ''}`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:h-20 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-0 px-4 sm:px-6 lg:h-20 lg:px-8">
         <a href="#top" className="flex shrink-0 items-center gap-3" aria-label={`${SITE.fullName} – về đầu trang`}>
           <Image src={IMG.logo} alt={`Logo ${SITE.name}`} className="h-11 w-auto lg:h-14" sizes="80px" preload />
           <span className="hidden flex-col leading-none sm:flex">
@@ -53,13 +75,16 @@ export function Header() {
           </span>
         </a>
 
+        {/* Hai khoảng đệm co giãn: ngoài Hero cả hai grow → menu ở giữa; trong Hero đệm phải về 0 → menu dồn phải */}
+        <div aria-hidden className="flex-1" />
+
         <nav aria-label="Điều hướng chính" className="hidden lg:block">
           <ul className="flex items-center gap-1">
             {NAV.map((n) => (
               <li key={n.href}>
                 <a
                   href={n.href}
-                  className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors ${active === n.href ? 'text-brand' : 'text-ink-soft hover:text-brand'}`}
+                  className={`relative inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium transition-colors ${active === n.href ? 'text-brand' : 'text-ink-soft hover:text-brand'}`}
                 >
                   {n.label}
                   <span
@@ -72,17 +97,32 @@ export function Header() {
           </ul>
         </nav>
 
+        <div
+          aria-hidden
+          className={`hidden transition-[flex-grow] duration-500 ease-out motion-reduce:transition-none lg:block ${inHero ? 'grow-0' : 'grow'}`}
+        />
+
         <div className="flex items-center gap-2">
-          <a
-            href={`tel:${SITE.phone.raw}`}
-            className="hidden items-center gap-2 px-3 text-sm font-semibold text-brand xl:inline-flex"
+          {/* Nút gọi + đặt lịch (chỉ desktop — mobile đã có trong menu & thanh liên hệ dưới): thu về 0 khi đang ở Hero (animation max-width → menu trượt giữa ↔ phải) */}
+          <div
+            inert={inHero}
+            className={`-my-3 hidden overflow-hidden py-3 transition-[max-width,opacity] lg:block duration-500 ease-out motion-reduce:transition-none ${
+              inHero ? 'max-w-0 opacity-0' : 'max-w-[22rem] opacity-100'
+            }`}
           >
-            <PhoneIcon width={18} height={18} />
-            {SITE.phone.display}
-          </a>
-          <a href="#dat-lich" className={`${btn.primary} hidden min-h-11 sm:inline-flex`}>
-            Đặt lịch
-          </a>
+            <div className="flex w-max items-center gap-2 pl-4">
+              <a
+                href={`tel:${SITE.phone.raw}`}
+                className="hidden shrink-0 items-center gap-2 px-3 text-sm font-semibold whitespace-nowrap text-brand xl:inline-flex"
+              >
+                <PhoneIcon width={18} height={18} />
+                {SITE.phone.display}
+              </a>
+              <a href="#dat-lich" className={`${btn.primary} hidden min-h-11 shrink-0 whitespace-nowrap lg:inline-flex`}>
+                Đặt lịch
+              </a>
+            </div>
+          </div>
           <button
             type="button"
             className="inline-flex size-11 items-center justify-center rounded-full text-brand transition hover:bg-sand lg:hidden"

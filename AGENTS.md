@@ -50,14 +50,24 @@ Website demo đặt lịch cho Miên Spa Tuy Hòa. Mọi thay đổi trong repo 
 - Validate form ở client (và server nếu có backend); SĐT VN `^0\d{9}$` sau khi bỏ khoảng trắng/dấu chấm.
 
 ## 6. Quy ước code đã thiết lập (bắt buộc dùng lại, không làm song song cách khác)
-- **Không để 1 chữ rớt xuống dòng cuối** (desktop, tablet, mobile): mọi chuỗi hiển thị đi qua `nw()` trong `lib/format.ts` (đoạn văn `nw(text)`, tiêu đề `nw(text, 1)`); nút/nhãn ngắn dùng `whitespace-nowrap`. CSS toàn cục đã có `text-wrap: pretty/balance` — không gỡ.
+- **Không để 1 chữ rớt xuống dòng cuối** (desktop, tablet, mobile): mọi chuỗi hiển thị đi qua `nw()` trong `lib/format.ts` (đoạn văn `nw(text)`, tiêu đề `nw(text, 1)`); nút/nhãn ngắn dùng `whitespace-nowrap`. Tránh " – " trong nhãn ngắn (trình duyệt được ngắt sau dấu gạch → rớt chữ), dùng ngoặc: "Massage Việt Nam (Nữ)". Chữ dựng đứng (`writing-mode`) và nhãn `sr-only` là báo nhầm của công cụ đo rớt chữ. CSS toàn cục đã có `text-wrap: pretty/balance` — không gỡ.
 - Giá/thời lượng hiển thị qua `formatPrice`, `summarize`, `priceRows`, `variantLabel` trong `lib/format.ts` — không tự nối chuỗi giá.
 - Ảnh: bản gốc giữ nguyên ở `public/images/Miên Spa Tuy Hòa/`; ảnh dùng trên web là bản đã cắt viền/chữ, nén WebP ở `assets/images/` (tên ASCII), import tĩnh qua `lib/images.ts`. Ảnh mới phải theo đúng luồng này.
 - Section: dùng `Section`, `Container`, `SectionHeading`, `Eyebrow`, `revealDelay` trong `components/ui/Section.tsx`. Nền xen kẽ cream/sand theo thứ tự trang; khoảng cách dọc `py-14 md:py-16 lg:py-24|28`; container `max-w-7xl px-4 sm:px-6 lg:px-8`; tiêu đề cách nội dung `mb-12 lg:mb-16`; lưới thẻ `gap-6 lg:gap-8`.
 - Nút: class trong `components/ui/styles.ts` (`btn.primary|outline|light|ghost`). Hằng số/kiểu dùng chung **không** đặt trong file `'use client'`.
 - Nút "Đặt lịch" theo dịch vụ: dùng `<BookButton serviceId=...>` — `BookingForm` tự điền sẵn qua sự kiện `BOOK_EVENT`.
 - Hiệu ứng cuộn: gắn `data-reveal` (`RevealObserver` đã chạy trong `app/page.tsx`); Hero dùng `.hero-in` (không phụ thuộc JS).
-- Hero phải vừa đúng 1 màn hình ở mọi kích thước — kiểm tra lại khi sửa Hero.
+- Hero vừa đúng 1 màn hình ở mobile, tablet và laptop; màn hình desktop lớn thì **giới hạn chiều cao** (lg ≤ 880px, 2xl ≤ 800px) để không bị kéo cao theo màn hình — kiểm tra lại khi sửa Hero.
+- **Ngôn ngữ thiết kế** theo `docs/REQUIREMENTS.md` §5.1 (Nature Distilled + Organic Biophilic, nền Accessible & Ethical, Micro-interactions, Bento, storytelling nhẹ). Dùng sẵn:
+  - Bóng: `shadow-soft | shadow-card | shadow-lift | shadow-deep` — không viết `shadow-[...]` tuỳ ý.
+  - Bo góc: `rounded-3xl` (24px) cho thẻ, `rounded-2xl`/`rounded-xl` cho phần tử nhỏ. Ảnh khung vòm dùng `<ArchFrame>` (không đặt `rounded-t-full` + `rounded-b-*` trên cùng phần tử — góc dưới sẽ mất).
+  - Section nền `sand` tự có lớp giấy kraft (`.paper-grain`). Sóng `<Wave>` chỉ dùng ở mép footer — không thêm `waveFrom` cho section khác. `from` của sóng footer phải **bằng màu nền section cuối cùng** trước footer; đổi nền/thêm/bớt section thì cập nhật lại, nếu không sẽ lộ một dải màu thừa.
+  - Tiêu đề section: `<SectionHeading title desc>` (căn trái, có đường kẻ; `rule={false}` khi ngay dưới đã có đường kẻ). Không eyebrow lặp tiêu đề.
+  - Nút/phần tử bấm: class `.press`; focus ring 3px toàn cục (trên nền tối thêm `.on-dark`). Chữ nội dung ≥ 16px (`text-base`), vùng chạm ≥ 44px.
+  - Thẻ có hover phóng (bento): bọc ngoài bằng `div data-reveal`, hover đặt ở thẻ bên trong.
+  - Storytelling: `data-reveal="grow-x|grow-y"` cho đường nối, các bước stagger bằng `revealDelay`.
+  - Cấm: parallax, morphing, film grain/VHS, màu ngoài 6 token, dark mode.
+  - Chống AI-slop (REQUIREMENTS §5.1): không lưới thẻ icon–tiêu đề–mô tả, không số thứ tự giả, không blob/lá/bông lúa trôi nổi, không huy hiệu nổi trang trí, không lặp câu chữ. Trước khi thêm trang trí, hỏi: nó cho người xem biết thêm điều gì?
 - Màu viền mặc định nằm trong `@layer base` — không viết lại rule `*` ngoài layer (sẽ ghi đè class `border-*`).
 - Cache Components đang bật: không gọi `new Date()`/`Date.now()` khi render server; ở client chỉ đọc trong handler/effect hoặc `useSyncExternalStore`.
 

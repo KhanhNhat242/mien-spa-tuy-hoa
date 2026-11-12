@@ -15,7 +15,7 @@ export function FloatingActions() {
       >
         <ul className="mx-auto grid max-w-md grid-cols-3 gap-2">
           <li>
-            <a href={`tel:${SITE.phone.raw}`} className="flex min-h-12 flex-col items-center justify-center rounded-xl text-xs font-semibold text-brand transition active:bg-sand">
+            <a href={`tel:${SITE.phone.raw}`} className="press flex min-h-12 flex-col items-center justify-center rounded-xl text-xs font-semibold text-brand transition active:bg-sand">
               <PhoneIcon width={20} height={20} />
               Gọi điện
             </a>
@@ -25,14 +25,14 @@ export function FloatingActions() {
               href={SITE.zaloUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-12 flex-col items-center justify-center rounded-xl text-xs font-semibold text-brand transition active:bg-sand"
+              className="press flex min-h-12 flex-col items-center justify-center rounded-xl text-xs font-semibold text-brand transition active:bg-sand"
             >
               <ZaloIcon className="h-5 rounded-md border border-current px-1" />
               Zalo
             </a>
           </li>
           <li>
-            <a href="#dat-lich" className="flex min-h-12 flex-col items-center justify-center rounded-xl bg-brand text-xs font-semibold text-cream transition active:bg-brand-soft">
+            <a href="#dat-lich" className="press flex min-h-12 flex-col items-center justify-center rounded-xl bg-brand text-xs font-semibold text-cream transition active:bg-brand-soft">
               <CalendarIcon width={20} height={20} />
               Đặt lịch
             </a>
@@ -53,7 +53,7 @@ export function FloatingActions() {
               aria-label={b.label}
               title={b.label}
               {...(b.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              className={`flex size-14 items-center justify-center rounded-full shadow-[0_14px_30px_-12px_rgba(43,33,24,0.5)] transition hover:-translate-y-0.5 ${b.cls}`}
+              className={`press flex size-14 items-center justify-center rounded-full shadow-card hover:-translate-y-0.5 ${b.cls}`}
             >
               {b.icon}
             </a>

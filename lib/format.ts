@@ -71,7 +71,8 @@ export function priceRows(service: Service) {
   return groups.map((g) => {
     const vs = service.variants.filter((x) => (x.group ?? '') === g)
     return {
-      name: `${service.name} – ${g}`,
+      // Dùng ngoặc thay cho " – ": trình duyệt được ngắt dòng sau dấu gạch → rớt 1 chữ
+      name: `${service.name} (${g})`,
       duration: vs.map((x) => (x.duration ? `${x.duration}'` : '')).join(' / '),
       price: vs.map((x) => formatPrice(x.price)).join(' / '),
     }
