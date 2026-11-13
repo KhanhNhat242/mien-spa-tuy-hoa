@@ -9,6 +9,10 @@ import heroTea from '@/assets/images/hero-tea.webp'
 import heroImg from '@/assets/images/hero-img.webp'
 // Ảnh nền banner Hero (khách cung cấp: public/images/hero-banner2.jpg → WebP 1920px)
 import heroBanner from '@/assets/images/hero-banner2.webp'
+// Hero bản 4: cắt từ hero-banner2 (1028x1036), lấy kỹ thuật viên + khách ở nửa phải ảnh
+import heroDuo from '@/assets/images/hero-duo.webp'
+// Hero bản 5: hero-banner3 (đã tách nền trắng → trong suốt), cắt 2 người bên phải (544x537, WebP có alpha)
+import heroCutout from '@/assets/images/hero-cutout.webp'
 import giftVoucher from '@/assets/images/gift-voucher.webp'
 import priceLe from '@/assets/images/price-le.webp'
 import svcGoiDau from '@/assets/images/svc-goi-dau.webp'
@@ -71,6 +75,8 @@ export const IMG = {
   heroMain,
   heroImg,
   heroBanner,
+  heroDuo,
+  heroCutout,
   heroTea,
   giftVoucher,
 

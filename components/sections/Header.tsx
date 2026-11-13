@@ -11,8 +11,8 @@ export function Header() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string>('')
   const [scrolled, setScrolled] = useState(false)
-  // Đang trong phạm vi Hero → desktop (lg+): ẩn cả thanh header (fixed, trượt lên); Hero đã có logo + menu riêng.
-  // Cuộn qua Hero → header trượt xuống, menu ở giữa + nút gọi/đặt lịch hiện dần. Dưới lg header luôn hiện (cần nút menu).
+  // Đang trong phạm vi Hero → ẩn nút gọi/đặt lịch (Hero đã có CTA), menu dồn sang phải;
+  // cuộn qua Hero → hai nút hiện dần, menu trượt về giữa.
   const [inHero, setInHero] = useState(true)
 
   // Scroll-spy: tô đậm mục menu của section đang xem
@@ -65,9 +65,7 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b border-sand bg-cream/90 backdrop-blur-md transition-[box-shadow,translate,opacity,visibility] duration-500 ease-out motion-reduce:transition-none lg:fixed lg:inset-x-0 ${
-        scrolled ? 'shadow-soft' : ''
-      } ${inHero ? 'lg:invisible lg:-translate-y-full lg:opacity-0' : 'lg:visible lg:translate-y-0 lg:opacity-100'}`}
+      className={`sticky top-0 z-50 border-b border-sand bg-cream/90 backdrop-blur-md transition-shadow ${scrolled ? 'shadow-soft' : ''}`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-0 px-4 sm:px-6 lg:h-20 lg:px-8">
         <a href="#top" className="flex shrink-0 items-center gap-3" aria-label={`${SITE.fullName} – về đầu trang`}>
@@ -81,13 +79,7 @@ export function Header() {
         {/* Hai khoảng đệm co giãn: ngoài Hero cả hai grow → menu ở giữa; trong Hero đệm phải về 0 → menu dồn phải */}
         <div aria-hidden className="flex-1" />
 
-        <nav
-          aria-label="Điều hướng chính"
-          inert={inHero}
-          className={`hidden transition-[opacity,visibility] duration-500 ease-out motion-reduce:transition-none lg:block ${
-            inHero ? 'invisible opacity-0' : 'visible opacity-100'
-          }`}
-        >
+        <nav aria-label="Điều hướng chính" className="hidden lg:block">
           <ul className="flex items-center gap-1">
             {NAV.map((n) => (
               <li key={n.href}>

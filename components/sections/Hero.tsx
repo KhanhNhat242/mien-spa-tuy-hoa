@@ -1,127 +1,99 @@
 import type { CSSProperties } from 'react'
-import Image from 'next/image'
-import { CATEGORIES, NAV, SITE } from '@/lib/site-data'
+import { SITE } from '@/lib/site-data'
 import { IMG } from '@/lib/images'
 import { nw } from '@/lib/format'
-import { CheckIcon, PhoneIcon, PinIcon } from '@/components/ui/Icons'
+import { ArrowRightIcon } from '@/components/ui/Icons'
+import { btn } from '@/components/ui/styles'
+import { LensImage } from '@/components/ui/LensImage'
 import { HeroTitle } from './HeroTitle'
 
 const d = (ms: number) => ({ '--hero-delay': `${ms}ms` }) as CSSProperties
 
-/** Ba nhóm dịch vụ nêu trong thanh giữa Hero (nhãn lấy từ CATEGORIES — không hard-code) */
-const HIGHLIGHT_IDS = ['goi-xong', 'body', 'combo'] as const
+/** Ngôi sao 4 cánh nhỏ (theo ảnh mẫu) */
+function Sparkle({ className = '', style }: { className?: string; style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={className} style={style}>
+      <path fill="currentColor" d="M12 0c.6 6.2 5.8 11.4 12 12-6.2.6-11.4 5.8-12 12-.6-6.2-5.8-11.4-12-12C6.2 11.4 11.4 6.2 12 0Z" />
+    </svg>
+  )
+}
 
 /**
- * Hero dạng banner (theo ảnh mẫu khách gửi 13/11/2026): ảnh `hero-banner` phủ toàn khung, mờ nhẹ + lớp tối;
- * giữa là logo, thanh menu trang (thay tagline), slogan cỡ lớn (VariableProximity), 2 đường kẻ mảnh kẹp thanh 3 nhóm
- * dịch vụ có dấu tích; hàng đáy: hotline (trái) · Đặt lịch ngay (giữa) · địa chỉ (phải).
- * Chiều cao: 1 màn hình ở mobile/tablet/laptop (desktop lg+ header ẩn nên Hero cao 100svh); màn lớn giới hạn lg ≤ 960px, 2xl (≥1536px) ≤ 880px.
+ * Hero bản 5 (theo ảnh mẫu khách gửi 13/11/2026): nền cream, 2 cột.
+ * Trái: tiêu đề lớn (VariableProximity), 1 đoạn định vị, nút Đặt lịch ngay + liên kết chữ "Xem bảng giá →"
+ * (khách đã bỏ tagline, hàng số liệu và thẻ dịch vụ nổi).
+ * Phải: khung vuông canh giữa cột theo chiều dọc — vòng tròn mảnh, tấm nền bo góc lớn màu nâu nhạt, ảnh `hero-cutout`
+ * (hero-banner3 đã tách nền, 2 người bên phải) đặt trên tấm nền, đầu kỹ thuật viên nhô khỏi mép trên như mẫu.
+ * Chiều cao: 1 màn hình (trừ header), màn lớn giới hạn (AGENTS §6).
  */
 export function Hero() {
-  const highlights = HIGHLIGHT_IDS.map((id) => CATEGORIES.find((c) => c.id === id)!.label)
-
   return (
     <section
       id="top"
       aria-labelledby="hero-title"
-      className="on-dark relative isolate flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden bg-ink text-cream lg:h-svh lg:max-h-[960px] lg:min-h-[640px] 2xl:max-h-[880px]"
+      className="relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden bg-cream lg:h-[calc(100svh-5rem)] lg:max-h-[880px] lg:min-h-[640px] 2xl:max-h-[800px]"
     >
-      {/* Ảnh nền + lớp tối (đảm bảo tương phản chữ cream) */}
-      <Image
-        src={IMG.heroBanner}
-        alt=""
-        fill
-        loading="eager"
-        fetchPriority="high"
-        sizes="100vw"
-        placeholder="blur"
-        className="-z-20 scale-105 object-cover object-[78%_75%] blur-[2px] lg:object-[60%_75%]"
-      />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-ink/60" />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,transparent_0%,var(--color-ink)_120%)] opacity-70" />
-
-      <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col items-center px-4 pt-8 pb-24 text-center sm:px-6 lg:px-8 lg:pt-10 lg:pb-10">
-        {/* Khối giữa */}
-        <div className="flex w-full flex-1 flex-col items-center justify-center">
-          <div className="hero-in rounded-2xl bg-cream px-4 py-2 shadow-soft" style={d(0)}>
-            <Image src={IMG.logo} alt={`Logo ${SITE.name}`} className="h-12 w-auto sm:h-16" sizes="120px" />
-          </div>
-          {/* Menu trang đặt trong Hero (md+); header ẩn menu của nó khi đang ở Hero để không lặp. Mobile dùng nút menu trên header */}
-          <nav aria-label="Điều hướng trong banner" className="hero-in mt-5 hidden md:block" style={d(80)}>
-            <ul className="flex flex-wrap justify-center gap-x-9 gap-y-1">
-              {NAV.map((n) => (
-                <li key={n.href}>
-                  <a
-                    href={n.href}
-                    className="press group relative inline-flex min-h-11 items-center text-base font-medium whitespace-nowrap text-cream/90 transition-colors hover:text-cream"
-                  >
-                    {n.label}
-                    <span
-                      aria-hidden
-                      className="absolute inset-x-0 bottom-1.5 h-px origin-left scale-x-0 bg-sand transition-transform duration-300 group-hover:scale-x-100 group-focus-visible:scale-x-100"
-                    />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
+      <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pt-6 pb-20 sm:px-6 md:pt-10 lg:grid lg:min-h-0 lg:grid-cols-12 lg:items-center lg:gap-10 lg:px-8 lg:py-10">
+        {/* Cột chữ */}
+        <div className="relative z-10 lg:col-span-6">
           <HeroTitle
             name={SITE.name}
             slogan={nw(SITE.slogan, 1)}
-            className="hero-in mt-4 max-w-[16ch] font-serif text-[2.9rem] leading-[1.04] tracking-[-0.01em] text-cream sm:mt-8 sm:text-7xl lg:max-w-none lg:text-[5.4rem] xl:text-[6.4rem]"
-            style={d(150)}
+            className="hero-in max-w-[13ch] font-serif text-[2.5rem] leading-[1.06] tracking-[-0.01em] text-brand sm:mt-4 sm:text-6xl xl:text-[4.4rem]"
+            style={d(80)}
           />
 
-          {/* Đường kẻ – thanh dịch vụ – đường kẻ */}
-          <div className="hero-in mt-6 w-full max-w-4xl sm:mt-10" style={d(300)}>
-            <span aria-hidden className="mx-auto block h-px w-full bg-cream/55" />
-            <ul className="mx-auto my-5 flex w-fit flex-col items-start gap-x-10 gap-y-2.5 rounded-3xl border border-sand/50 bg-ink/35 px-6 py-3.5 backdrop-blur-sm sm:my-6 sm:flex-row sm:items-center sm:rounded-full sm:px-8">
-              {highlights.map((h) => (
-                <li key={h} className="flex items-center gap-2.5 text-base whitespace-nowrap text-cream sm:text-lg">
-                  <CheckIcon width={18} height={18} className="shrink-0 text-sand" />
-                  {h}
-                </li>
-              ))}
-            </ul>
-            <span aria-hidden className="mx-auto block h-px w-full bg-cream/55" />
+          <p className="hero-in mt-5 max-w-md text-base leading-relaxed text-ink-soft sm:text-lg" style={d(160)}>
+            {nw('Điểm hẹn chăm sóc cơ thể, trị liệu cổ vai gáy và gội đầu dưỡng sinh thư thái giữa lòng Tuy Hòa.')}
+          </p>
+
+          <div className="hero-in mt-6 flex items-center gap-6 lg:mt-8" style={d(320)}>
+            <a href="#dat-lich" className={`${btn.primary} px-7 whitespace-nowrap`}>
+              Đặt lịch ngay
+            </a>
+            <a
+              href="#bang-gia"
+              className="press group inline-flex min-h-11 items-center gap-2 text-sm font-semibold whitespace-nowrap text-brand"
+            >
+              Xem bảng giá
+              <ArrowRightIcon width={16} height={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+            </a>
           </div>
         </div>
 
-        {/* Hàng đáy: hotline · đặt lịch · địa chỉ */}
-        {/* Chừa lề phải < 1440px cho cụm nút nổi (Gọi/Zalo/Messenger) ở góc phải. Dưới lg ẩn: thanh liên hệ cố định phía dưới đã có Gọi điện + Đặt lịch */}
-        <div className="hero-in mt-8 hidden w-full items-center gap-4 lg:grid lg:grid-cols-3 lg:max-[1439px]:pr-16" style={d(450)}>
-          <a href={`tel:${SITE.phone.raw}`} className="press flex items-center gap-3 text-left">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-cream text-brand">
-              <PhoneIcon width={20} height={20} />
-            </span>
-            <span className="leading-tight">
-              <span className="block text-sm text-sand">Hotline</span>
-              <span className="text-lg font-semibold whitespace-nowrap">{SITE.phone.display}</span>
-            </span>
-          </a>
+        {/*
+          Cột ảnh — khung sân khấu VUÔNG luôn nằm giữa cột theo cả 2 chiều (cạnh = min(rộng, cao) của cột, qua
+          container query kích thước — chỉ lg+; dưới lg cq trả về 0 khi cột là flex item nên dùng ô vuông cao = cột) → ảnh to nhất
+          có thể mà vẫn canh giữa màn hình theo chiều dọc.
+        */}
+        <div className="relative min-h-[150px] flex-1 sm:min-h-[300px] lg:col-span-6 lg:h-full lg:min-h-0 lg:[container-type:size]">
+          <div className="absolute inset-y-0 left-1/2 aspect-square max-w-full -translate-x-1/2 lg:inset-0 lg:m-auto lg:aspect-auto lg:size-[min(100cqw,100cqh)] lg:translate-x-0">
+            {/* Vòng tròn mảnh phía sau */}
+            <div aria-hidden className="hero-in absolute inset-0 rounded-full border border-brand/15" style={d(100)} />
+            {/* Tấm nền bo góc lớn — mép trên ~38% để đầu kỹ thuật viên nhô lên khỏi tấm nền như mẫu */}
+            <div
+              aria-hidden
+              className="hero-in absolute inset-x-[8%] top-[38%] bottom-[6%] rounded-[2.5rem] rounded-tl-[42%] bg-brand-soft/30 sm:rounded-[3rem] sm:rounded-tl-[42%]"
+              style={d(150)}
+            />
+            {/* Ảnh đã tách nền — rộng hơn tấm nền một chút để ảnh cao hơn; đáy trùng đáy tấm nền (cắt bo góc dưới) */}
+            <div className="hero-in absolute inset-x-[2%] top-0 bottom-[6%]" style={d(220)}>
+              <div className="absolute inset-x-[6%] top-0 bottom-0 overflow-hidden rounded-b-[2.5rem] sm:rounded-b-[3rem]">
+                {/* Hiệu ứng thấu kính khúc xạ theo con trỏ (WebGL, chỉ máy có chuột); ảnh tĩnh là bản dự phòng */}
+                <LensImage
+                  src={IMG.heroCutout}
+                  alt="Kỹ thuật viên Miên Spa gội đầu dưỡng sinh cho khách"
+                  sizes="(min-width: 1024px) 600px, 90vw"
+                  scale={1.12}
+                  imgClassName="scale-[1.12] origin-bottom object-contain object-bottom"
+                />
+              </div>
+            </div>
 
-          <a
-            href="#dat-lich"
-            className="press mx-auto inline-flex min-h-12 items-center justify-center rounded-full bg-sand px-8 text-sm font-semibold tracking-[0.16em] whitespace-nowrap text-brand uppercase shadow-lift transition-colors hover:bg-cream"
-          >
-            Đặt lịch ngay
-          </a>
-
-          <a
-            href={SITE.mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="press flex items-center justify-end gap-3 text-right"
-          >
-            <span className="leading-tight">
-              <span className="block text-sm text-sand">Địa chỉ</span>
-              <span className="text-lg font-semibold whitespace-nowrap">{SITE.address.street}</span>
-            </span>
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-cream text-brand">
-              <PinIcon width={20} height={20} />
-            </span>
-          </a>
+            {/* Ngôi sao nhỏ */}
+            <Sparkle className="hero-in absolute top-[22%] right-[4%] size-4 text-brand-soft" style={d(550)} />
+            <Sparkle className="hero-in absolute bottom-[1%] left-[38%] size-3 text-brand-soft" style={d(600)} />
+          </div>
         </div>
       </div>
     </section>

@@ -57,7 +57,7 @@ Website demo đặt lịch cho Miên Spa Tuy Hòa. Mọi thay đổi trong repo 
 - Nút: class trong `components/ui/styles.ts` (`btn.primary|outline|light|ghost`). Hằng số/kiểu dùng chung **không** đặt trong file `'use client'`.
 - Nút "Đặt lịch" theo dịch vụ: dùng `<BookButton serviceId=...>` — `BookingForm` tự điền sẵn qua sự kiện `BOOK_EVENT`.
 - Hiệu ứng cuộn: gắn `data-reveal` (`RevealObserver` đã chạy trong `app/page.tsx`); Hero dùng `.hero-in` (không phụ thuộc JS).
-- Hero cao đúng 1 màn hình ở mobile, tablet và laptop (desktop lg+ header ẩn khi ở Hero nên Hero = 100svh); màn hình lớn **giới hạn chiều cao** (lg ≤ 960px, 2xl ≤ 880px) để không kéo cao theo màn hình, lộ section kế tiếp như các section khác — kiểm tra lại khi sửa Hero.
+- Hero cao đúng 1 màn hình (trừ header) ở mobile, tablet và laptop; màn hình lớn **giới hạn chiều cao** (lg ≤ 880px, 2xl ≤ 800px) để không kéo cao theo màn hình, lộ section kế tiếp như các section khác — kiểm tra lại khi sửa Hero.
 - **Ngôn ngữ thiết kế** theo `docs/REQUIREMENTS.md` §5.1 (Nature Distilled + Organic Biophilic, nền Accessible & Ethical, Micro-interactions, Bento, storytelling nhẹ). Dùng sẵn:
   - Bóng: `shadow-soft | shadow-card | shadow-lift | shadow-deep` — không viết `shadow-[...]` tuỳ ý.
   - Bo góc: `rounded-3xl` (24px) cho thẻ, `rounded-2xl`/`rounded-xl` cho phần tử nhỏ. Ảnh khung vòm dùng `<ArchFrame>` (không đặt `rounded-t-full` + `rounded-b-*` trên cùng phần tử — góc dưới sẽ mất).
