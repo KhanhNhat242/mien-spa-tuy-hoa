@@ -24,26 +24,26 @@ function Sparkle({ className = '', style }: { className?: string; style?: CSSPro
  * (khách đã bỏ tagline, hàng số liệu và thẻ dịch vụ nổi).
  * Phải: khung vuông canh giữa cột theo chiều dọc — vòng tròn mảnh, tấm nền bo góc lớn màu nâu nhạt, ảnh `hero-cutout`
  * (hero-banner3 đã tách nền, 2 người bên phải) đặt trên tấm nền, đầu kỹ thuật viên nhô khỏi mép trên như mẫu.
- * Chiều cao: 1 màn hình (trừ header), màn lớn giới hạn (AGENTS §6).
+ * Chiều cao: theo nội dung (không ép đủ màn hình — tránh khoảng trống thừa), vẫn gọn trong 1 màn hình laptop (AGENTS §6).
  */
 export function Hero() {
   return (
     <section
       id="top"
       aria-labelledby="hero-title"
-      className="relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden bg-cream lg:h-[calc(100svh-5rem)] lg:max-h-[880px] lg:min-h-[640px] 2xl:max-h-[800px]"
+      className="relative overflow-hidden bg-cream"
     >
-      <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pt-6 pb-20 sm:px-6 md:pt-10 lg:grid lg:min-h-0 lg:grid-cols-12 lg:items-center lg:gap-10 lg:px-8 lg:py-10">
+      <div className="relative mx-auto grid w-full max-w-7xl gap-8 px-4 pt-8 pb-12 sm:px-6 md:pt-12 lg:grid-cols-12 lg:items-center lg:gap-10 lg:px-8 lg:py-8">
         {/* Cột chữ */}
         <div className="relative z-10 lg:col-span-6">
           <HeroTitle
             name={SITE.name}
             slogan={nw(SITE.slogan, 1)}
-            className="hero-in max-w-[13ch] font-serif text-[2.5rem] leading-[1.06] tracking-[-0.01em] text-brand sm:mt-4 sm:text-6xl xl:text-[4.4rem]"
+            className="hero-in max-w-[13ch] font-serif text-[2.5rem] leading-[1.06] tracking-[-0.01em] text-brand sm:mt-4 sm:text-6xl lg:text-[clamp(4rem,5.6vw,5rem)]"
             style={d(80)}
           />
 
-          <p className="hero-in mt-5 max-w-md text-base leading-relaxed text-ink-soft sm:text-lg" style={d(160)}>
+          <p className="hero-in mt-5 max-w-lg text-base leading-relaxed text-ink-soft sm:text-lg lg:max-w-xl" style={d(160)}>
             {nw('Điểm hẹn chăm sóc cơ thể, trị liệu cổ vai gáy và gội đầu dưỡng sinh thư thái giữa lòng Tuy Hòa.')}
           </p>
 
@@ -62,12 +62,12 @@ export function Hero() {
         </div>
 
         {/*
-          Cột ảnh — khung sân khấu VUÔNG luôn nằm giữa cột theo cả 2 chiều (cạnh = min(rộng, cao) của cột, qua
-          container query kích thước — chỉ lg+; dưới lg cq trả về 0 khi cột là flex item nên dùng ô vuông cao = cột) → ảnh to nhất
-          có thể mà vẫn canh giữa màn hình theo chiều dọc.
+          Cột ảnh — khung sân khấu VUÔNG: mobile rộng hết khung (tối đa 460px); desktop luôn rộng bằng cột
+          (không giới hạn theo chiều cao màn hình — khách ưu tiên không hở khoảng trống giữa chữ và ảnh, 13/11/2026). Hero cao theo nội dung (không ép 100svh)
+          → không còn khoảng trống thừa trên/dưới.
         */}
-        <div className="relative min-h-[150px] flex-1 sm:min-h-[300px] lg:col-span-6 lg:h-full lg:min-h-0 lg:[container-type:size]">
-          <div className="absolute inset-y-0 left-1/2 aspect-square max-w-full -translate-x-1/2 lg:inset-0 lg:m-auto lg:aspect-auto lg:size-[min(100cqw,100cqh)] lg:translate-x-0">
+        <div className="relative lg:col-span-6">
+          <div className="relative mx-auto aspect-square w-full max-w-[460px] lg:max-w-none">
             {/* Vòng tròn mảnh phía sau */}
             <div aria-hidden className="hero-in absolute inset-0 rounded-full border border-brand/15" style={d(100)} />
             {/* Tấm nền bo góc lớn — mép trên ~38% để đầu kỹ thuật viên nhô lên khỏi tấm nền như mẫu */}
