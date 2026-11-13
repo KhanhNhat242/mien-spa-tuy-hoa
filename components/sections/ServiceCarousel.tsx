@@ -90,7 +90,7 @@ export function ServiceCarousel({ slides, heading }: { slides: ServiceSlide[]; h
         {/* Sân khấu */}
         <ul
           aria-label="Dịch vụ chính"
-          className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:relative lg:mx-0 lg:block lg:h-[min(480px,calc(100svh-19rem))] lg:overflow-visible lg:p-0"
+          className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:relative lg:mx-0 lg:block lg:h-[clamp(400px,calc(100svh-17rem),500px)] lg:overflow-visible lg:p-0"
         >
           {slides.map((s, i) => {
             const off = i - active
@@ -131,11 +131,11 @@ export function ServiceCarousel({ slides, heading }: { slides: ServiceSlide[]; h
 
                 {/* Mô tả — desktop: chỉ hiện ở thẻ chính (thẻ bên chỉ có ảnh) */}
                 <div
-                  className={`flex flex-col p-5 pt-3 sm:p-6 sm:pt-4 lg:absolute lg:inset-y-0 lg:left-0 lg:w-1/2 lg:p-8 xl:p-10 lg:transition-[opacity,visibility,translate] lg:ease-out motion-reduce:transition-none ${
+                  className={`flex flex-col p-5 pt-3 sm:p-6 sm:pt-4 lg:absolute lg:inset-y-0 lg:left-0 lg:w-1/2 lg:p-7 xl:p-9 lg:transition-[opacity,visibility,translate] lg:ease-out motion-reduce:transition-none ${
                     main ? 'lg:visible lg:translate-x-0 lg:opacity-100 lg:delay-300 lg:duration-500' : 'lg:invisible lg:-translate-x-4 lg:opacity-0 lg:duration-200'
                   }`}
                 >
-                  <p className="font-serif text-3xl leading-tight text-brand xl:text-[2.6rem]">{s.price}</p>
+                  <p className="font-serif text-3xl leading-tight text-brand lg:text-2xl xl:text-[2rem]">{s.price}</p>
                   {s.duration && (
                     <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-ink-soft">
                       <ClockIcon width={16} height={16} className="text-sage" />
@@ -143,9 +143,9 @@ export function ServiceCarousel({ slides, heading }: { slides: ServiceSlide[]; h
                     </p>
                   )}
 
-                  <div className="mt-5 lg:mt-auto">
+                  <div className="mt-5 lg:mt-auto lg:pt-4">
                     <h3 className="font-serif text-xl leading-snug text-brand xl:text-2xl">{nw(s.title, 1)}</h3>
-                    <p className="mt-2 text-base leading-relaxed text-ink-soft">{nw(s.desc)}</p>
+                    <p className="mt-2 text-base leading-relaxed text-ink-soft lg:line-clamp-3">{nw(s.desc)}</p>
                     <BookButton
                       serviceId={s.bookId}
                       ariaLabel={`Đặt lịch ${s.title}`}
@@ -162,7 +162,7 @@ export function ServiceCarousel({ slides, heading }: { slides: ServiceSlide[]; h
         </ul>
 
         {/* Chấm điều hướng (desktop) — cũng là đường cho bàn phím/trình đọc màn hình */}
-        <div className="mt-8 hidden justify-center gap-2 lg:flex">
+        <div className="mt-6 hidden justify-center gap-2 lg:flex lg:[@media(max-height:820px)]:mt-3">
           {slides.map((s, i) => (
             <button
               key={s.key}

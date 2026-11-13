@@ -11,7 +11,8 @@ export function Header() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string>('')
   const [scrolled, setScrolled] = useState(false)
-  // Đang trong phạm vi Hero → ẩn nút gọi/đặt lịch, menu dồn sang phải
+  // Đang trong phạm vi Hero → desktop (lg+): ẩn cả thanh header (fixed, trượt lên); Hero đã có logo + menu riêng.
+  // Cuộn qua Hero → header trượt xuống, menu ở giữa + nút gọi/đặt lịch hiện dần. Dưới lg header luôn hiện (cần nút menu).
   const [inHero, setInHero] = useState(true)
 
   // Scroll-spy: tô đậm mục menu của section đang xem
@@ -29,8 +30,8 @@ export function Header() {
     })
     const onScroll = () => setScrolled(window.scrollY > 8)
     const hero = document.getElementById('top')
-    // rootMargin trừ chiều cao header: Hero coi như đã qua khi mép dưới chạm đáy header
-    const heroIo = new IntersectionObserver(([e]) => setInHero(e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' })
+    // rootMargin = chiều cao header (80px) + 16px: Hero coi như đã qua khi mép dưới lên quá đáy header — kể cả khi nhảy anchor (scroll-padding 5rem đặt mép Hero đúng 80px)
+    const heroIo = new IntersectionObserver(([e]) => setInHero(e.isIntersecting), { rootMargin: '-96px 0px 0px 0px' })
     if (hero) heroIo.observe(hero)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
@@ -64,7 +65,9 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b border-sand bg-cream/90 backdrop-blur-md transition-shadow ${scrolled ? 'shadow-soft' : ''}`}
+      className={`sticky top-0 z-50 border-b border-sand bg-cream/90 backdrop-blur-md transition-[box-shadow,translate,opacity,visibility] duration-500 ease-out motion-reduce:transition-none lg:fixed lg:inset-x-0 ${
+        scrolled ? 'shadow-soft' : ''
+      } ${inHero ? 'lg:invisible lg:-translate-y-full lg:opacity-0' : 'lg:visible lg:translate-y-0 lg:opacity-100'}`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-0 px-4 sm:px-6 lg:h-20 lg:px-8">
         <a href="#top" className="flex shrink-0 items-center gap-3" aria-label={`${SITE.fullName} – về đầu trang`}>
@@ -78,7 +81,13 @@ export function Header() {
         {/* Hai khoảng đệm co giãn: ngoài Hero cả hai grow → menu ở giữa; trong Hero đệm phải về 0 → menu dồn phải */}
         <div aria-hidden className="flex-1" />
 
-        <nav aria-label="Điều hướng chính" className="hidden lg:block">
+        <nav
+          aria-label="Điều hướng chính"
+          inert={inHero}
+          className={`hidden transition-[opacity,visibility] duration-500 ease-out motion-reduce:transition-none lg:block ${
+            inHero ? 'invisible opacity-0' : 'visible opacity-100'
+          }`}
+        >
           <ul className="flex items-center gap-1">
             {NAV.map((n) => (
               <li key={n.href}>

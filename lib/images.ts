@@ -7,6 +7,8 @@ import heroMain from '@/assets/images/hero-main.webp'
 import heroTea from '@/assets/images/hero-tea.webp'
 // Ảnh Hero (khách cung cấp: public/images/hero-img.jpg → WebP)
 import heroImg from '@/assets/images/hero-img.webp'
+// Ảnh nền banner Hero (khách cung cấp: public/images/hero-banner2.jpg → WebP 1920px)
+import heroBanner from '@/assets/images/hero-banner2.webp'
 import giftVoucher from '@/assets/images/gift-voucher.webp'
 import priceLe from '@/assets/images/price-le.webp'
 import svcGoiDau from '@/assets/images/svc-goi-dau.webp'
@@ -68,6 +70,7 @@ export const IMG = {
   logo,
   heroMain,
   heroImg,
+  heroBanner,
   heroTea,
   giftVoucher,
 
